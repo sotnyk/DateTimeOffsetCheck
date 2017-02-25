@@ -1,4 +1,5 @@
-﻿using PetaPoco;
+﻿using Npgsql;
+using PetaPoco;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,11 @@ namespace DateTimeOffsetCheck
             _db = new Database();
             CreateTable();
             PutValues();
-            WriteValues();
+            FetchValues();
+            DirectFetching();
         }
 
-        private static void WriteValues()
+        private static void FetchValues()
         {
             Console.WriteLine();
             Console.WriteLine("As datetime model");
@@ -34,6 +36,35 @@ namespace DateTimeOffsetCheck
             {
                 Console.WriteLine($"Timestamp:{item.Timestamp}, TimestampZ:{item.TimestampZ}, {item.Description}");
                 Console.WriteLine($"Kind:{item.Timestamp.Kind}, Kind:{item.TimestampZ.Kind}");
+            }
+        }
+
+        /// <summary>
+        /// Fetching using npgsql
+        /// </summary>
+        private static void DirectFetching()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Direct reading through npgsql");
+            using (var conn = new NpgsqlConnection(_db.ConnectionString))
+            {
+                conn.Open();
+                var command = new NpgsqlCommand(@"SELECT * FROM ""Dates""", conn);
+
+                // Execute the query and obtain a result set
+                NpgsqlDataReader dr = command.ExecuteReader();
+
+                var row = new List<object>();
+                // Output rows
+                while (dr.Read())
+                {
+                    row.Clear();
+                    for (int i = 0; i < dr.FieldCount; ++i)
+                        row.Add(dr[i]);
+                    Console.WriteLine("Values: " + string.Join("\t", row.Select(col => col.ToString())));
+                    Console.WriteLine("Values: " + string.Join("\t", row.Select(col => col.GetType().ToString())));
+                    Console.WriteLine("-------------");
+                }
             }
         }
 
