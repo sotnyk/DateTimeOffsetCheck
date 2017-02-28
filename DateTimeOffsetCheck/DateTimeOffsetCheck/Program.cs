@@ -13,10 +13,45 @@ namespace DateTimeOffsetCheck
         static Database _db;
 
         static void Main(string[] args)
-        {            
+        {
             //CheckDTOBehaviour();
-            CheckDtoInDB();
+            //CheckDtoInDB();
+            CheckDatetimeKind();
             Console.ReadLine();
+        }
+
+        private static void CheckDatetimeKind()
+        {
+            var local = new DateTime(2017, 02, 27, 12, 30, 00, DateTimeKind.Local);
+            var utc = new DateTime(2017, 02, 27, 12, 30, 00, DateTimeKind.Utc);
+            var unspecified = new DateTime(2017, 02, 27, 12, 30, 00, DateTimeKind.Unspecified);
+            Console.WriteLine($"local      = {local}");
+            Console.WriteLine($"utc        = {utc}");
+            Console.WriteLine($"unpecified = {unspecified}");
+            Console.WriteLine();
+            Console.WriteLine($"local==utc: {local == utc}");
+            Console.WriteLine($"local==unspecified: {local == unspecified}");
+            Console.WriteLine($"utc==unspecified: {utc == unspecified}");
+            Console.WriteLine();
+            Console.WriteLine($"local-utc: {local - utc}");
+            Console.WriteLine(local.ToString("r"));
+            Console.WriteLine(utc.ToString("r"));
+
+            DateTimeOffset localO = local;
+            DateTimeOffset utcO = utc;
+            DateTimeOffset unspecifiedO = unspecified;
+            Console.WriteLine();
+            Console.WriteLine($"localO      = {localO}");
+            Console.WriteLine($"utcO        = {utcO}");
+            Console.WriteLine($"unpecifiedO = {unspecifiedO}");
+            Console.WriteLine();
+            Console.WriteLine($"localO==utcO: {localO == utcO}");
+            Console.WriteLine($"localO==unspecifiedO: {localO == unspecifiedO}");
+            Console.WriteLine($"utcO==unspecifiedO: {utcO == unspecifiedO}");
+            Console.WriteLine();
+            Console.WriteLine($"localO-utcO: {localO - utcO}");
+            Console.WriteLine(localO.ToString("r"));
+            Console.WriteLine(utcO.ToString("r"));
         }
 
         private static void CheckDtoInDB()
